@@ -44,8 +44,10 @@ int main(int argc, char** argv){
 Thiết lập máy:
 B1: Config file /etc/hosts
 127.0.0.1 localhost
- ipclient client
- (Làm tương tự với máy master)
+ipclient client
+(Làm tương tự với máy master)
+Ở máy master lưu tất cả các ip của slave khác
+ở slave lưu ip của master và của cụm slave tưong tứng
  
 B2: tạo người dùng mới ở tất cả các máy
 sudo adduser mpiuser
@@ -102,3 +104,4 @@ $ mpirun -np 5 -hosts client,localhost ./cpi
 #hostnames can also be substituted with ip addresses.
 Chaỵ trên All máy mà master kết nối: 
 mpirun -np 5 --hostfile mpi_file ./cpi
+
