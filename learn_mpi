@@ -40,3 +40,65 @@ int main(int argc, char** argv){
   // Finalize the MPI environment
   MPI_Finalize();
 }
+
+Thiết lập máy:
+B1: Config file /etc/hosts
+127.0.0.1 localhost
+ ipclient client
+ (Làm tương tự với máy master)
+ 
+B2: tạo người dùng mới ở tất cả các máy
+sudo adduser mpiuser
+<KHÔNG dùng useradd do nó không tạo ra các home riêng>
+
+B3: Setting up SSH
+1. $ sudo apt­-get install openssh-server
+//login tk mới
+2. $ su - mpiuser
+Ta sẽ kết nối dược tới máy khác qua:
+3. ssh username@hostname
+Nó sẽ yêu cầu nhập MK. Để tiện hơn thì ta tạo key và copy chúng cho các máy khác trong authorized_keys của chúng
+4. ssh-keygen -t dsa   <Tạo khóa DSA>
+Thêm khóa cho tất cả các client:
+5. $ ssh-copy-id client #ip-address may also be used
+Kích hoạt ssh không MK:
+6. $ eval `ssh-agent`
+   $ ssh-add ~/.ssh/id_dsa
+Dùng khóa để truy cập client
+7. $ ssh client
+B4: Setting up NFS: chia sẻ thư mục
+NFS Server
+$ sudo apt-get install nfs-kernel-server
+Tạo cloud vơí mpiuser
+$ mkdir cloud
+$  cat /etc/exports
+/home/mpiuser/cloud *(rw,sync,no_root_squash,no_subtree_check) (thay thế * bởi cái IP mình muốn share) trong () là các quyền
+$ exportfs -a (chạy mỗi khi thay đổi exports)
+restart NFS: 
+$ sudo service nfs-kernel-server restart
+
+NFS Client
+Install:
+sudo apt-get install nfs-common
+Tạo folder cloud:
+mkdir cloud
+Gắn kết thư mục đưọc share: 
+sudo mount -t nfs master:/home/mpiuser/cloud ~/cloud
+Check gắn kết:
+$ df -h
+KQ: 
+Filesystem      		    Size  Used Avail Use% Mounted on
+master:/home/mpiuser/cloud  49G   15G   32G  32% /home/mpiuser/cloud
+Tạo gắn kết vĩnh viễn (khời động lại k sao):
+$ cat /etc/fstab
+#MPI CLUSTER SETUP
+master:/home/mpiuser/cloud /home/mpiuser/cloud nfs
+
+B5: Running MPI Programs (đề file thực thi trong thư mục chia sẻ)
+Chạy trên máy mình:
+mpirun -np 2 ./cpi
+Chạy trên 1 cụm:
+$ mpirun -np 5 -hosts client,localhost ./cpi
+#hostnames can also be substituted with ip addresses.
+Chaỵ trên All máy mà master kết nối: 
+mpirun -np 5 --hostfile mpi_file ./cpi
