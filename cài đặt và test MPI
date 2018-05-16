@@ -104,4 +104,17 @@ $ mpirun -np 5 -hosts client,localhost ./cpi
 #hostnames can also be substituted with ip addresses.
 Chaỵ trên All máy mà master kết nối: 
 mpirun -np 5 --hostfile mpi_file ./cpi
-
+Thiết lập số nhân tham gia của các máy (sửa trong host_file):
+>>> cat host_file
+cetus1:2  <tên máy:số nhân>
+cetus2:2
+cetus3:2
+cetus4:2
+Sau đó:
+>>> ./run.py mpi_hello_world
+/home/kendall/bin/mpirun -n 4 -f host_file ./mpi_hello_world
+Hello world from processor cetus1, rank 0 out of 4 processors
+Hello world from processor cetus2, rank 2 out of 4 processors
+Hello world from processor cetus2, rank 3 out of 4 processors
+Hello world from processor cetus1, rank 1 out of 4 processors
+==> chỉ có 2 host làm việc
