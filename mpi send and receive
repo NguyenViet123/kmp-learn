@@ -1,0 +1,24 @@
+A muốn gửi cho B
+=> A đóng gói, rồi ném vào bộ đềm cho B (Bộ đệm tương tự như bưu điện)
+sau đó thiết bị giao tiếp (thường là Network) chị trách nhiệm điều phối data tới đích,
+vị trí đích được chỉ định bằng RANK
+dữ liệu được gửi đến B, nhưng B phải công nhận nó muốn nhận data từ A
+A cũng phải công nhận dữ liệu đã được chuyển thành công và tiếp tục làm việc
+MPI_Send(
+  void* data,
+  int count,
+  MPI_Datatype datatype,
+  int destination,
+  int tag,
+  MPI_Comm communicator)
+ MPI_Recv(
+  void* data,
+  int count,
+  MPI_Datatype datatype,
+  int source,
+  int tag,
+  MPI_Comm communicator,
+  MPI_Status* status)
+ 
+ ping_pong: Gửi nhận liên tục PING_PONG_LIMIT lần
+ 
